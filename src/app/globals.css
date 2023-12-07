@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+/* :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
@@ -24,4 +24,35 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+} */
+.marquee{
+  
+  animation-name: scroll;
+  animation-duration: 6s;
+  animation-delay: 2s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+
+@keyframes scroll {
+  0% {
+    transform: translateY(0);
+  }
+
+  25% {
+    transform: translateY(-35%);
+  }
+
+  50% {
+    transform: translateY(-70%);
+  }
+
+  75% {
+    transform: translateY(-35%);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
 }
