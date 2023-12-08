@@ -4,64 +4,51 @@ import moment from 'moment';
 
 const DateTime = () => {
   const [isTrue,setIsTrue]=useState(false)
-  const [storeDay,setStoreDay]=useState()
-  const [storeDate,setStoreDate]=useState()
-  const [storeTime,setStoreTime]=useState()
-  const dayRef=useRef<any>('')
-  const timeRef=useRef<any>('')
-  const dateRef=useRef<any>('')
+  const [data,setData]=useState(new Date())
+  
+ 
 
-  const handleIsTrue=()=>{
-    handleStoreDate();
+  const handleIsTrue=(e:any)=>{
+    setData(prev=>{
+      const tempData=prev;tempData.setDate(e.target.value)
+      return tempData
+    })
     setIsTrue(true)
   }
- 
-   const handleStoreDate=()=>{
-    setStoreDay(dayRef.current.textContent)
-    setStoreDate(timeRef.current.textContent)
-    console.log(storeDay)
-    console.log(storeDate)
+ console.log(data);
+
+  const handleStoreTime=(e:any)=>{
+    setData(prev=>{
+      const tempData=prev;tempData.setHours(e.target.value)
+      return tempData
+    })
   }
 
-  const handleStoreTime=()=>{
-    setStoreTime(timeRef.current.textContent)
-    console.log(storeTime)
-  }
-
-  // let second=1000, minute=60*second,hour=60*minute,day=24*hour;
-  // let getTime=new Date().getTime();
-  // let formatHour=(getTime/hour);
-  // console.log(formatHour)
-  let intime = "10:00 Am"
-  let outtime = "07:00 Pm"
+  let formatHour=new Date().getHours()%12;
+  let shift=formatHour > 12 ? "Am":"Pm";
+  console.log(shift)
+  let intime = `${formatHour} : 00 ${shift}`
+  let outtime = `07:00 ${shift}`
   const [result, setResult] = useState<any>([])
 
   function intervals(startString:any, endString:any) {
-    var start = moment(startString, 'hh:mm a');
-    var end = moment(endString, 'hh:mm a');
+    let res: string[]=[];
+    var start = moment(startString, `hh:mm a`);
+    var end = moment(endString, `hh:mm a`);
     start.minutes(Math.ceil(start.minutes() / 60) * 60);
 
     var current = moment(start);
-
     while (current <= end) {
-      if (result.includes(current.format('hh:mm a'))) {
-        return null
-      }
-      else {
-        result.push(current.format('hh:mm a'));
+      if (!res.includes(current.format(`hh:mm a`)))  {
+        res.push(current.format(`hh:mm a`));
         current.add(60, 'minutes');
       }
     }
-
-
-    return result;
+    setResult(res)
   }
 
-  intervals(intime, outtime);
 
-
-
-  const [nextFiveDays, setNextFiveDays] = useState([]);
+  const [nextFiveDays, setNextFiveDays] = useState<any>([]);
 
   const getNextFiveDays = () => {
     const today = new Date();
@@ -69,7 +56,7 @@ const DateTime = () => {
 
     for (let i = 0; i < 5; i++) {
       const nextDay = new Date(today);
-      nextDay.setDate(today.getDate() + i + 1);
+      nextDay.setDate(today.getDate() + i );
       newNextFiveDays.push(nextDay.toDateString());
     }
 
@@ -77,35 +64,35 @@ const DateTime = () => {
   };
   useEffect(()=>{
     getNextFiveDays();
+    intervals(intime, outtime);
   },[])
 
   return (
     <div>
    <div className='flex gap-2 m-5'>
       
-        {nextFiveDays.map((date, index) => (
-          <button key={index} onClick={handleIsTrue} className='w-[100px] border'> 
-            <p className='mx-2' ref={dayRef}>{date.slice(0,3)}</p>
-            <p ref={dateRef}>{date.slice(8,10)}</p>
-          </button>
+       <ul className='flex gap-3'>
+       {nextFiveDays.map((date:any, index:any) => (
+          <li key={index} value={date.slice(8,10)} onClick={handleIsTrue} className='w-[100px] border'>
+            <div className='mx-2 pointer-events-none' >{date.slice(0,3)}</div>
+            <p className='mx-2 pointer-events-none' >{date.slice(8,10)}</p>
+          </li>
         ))}
+       </ul>
       
     </div>
     {
-      isTrue && <div className='flex gap-2'>
+      isTrue && <ul className='flex gap-2'>
       {
         result && result.length > 0  ? result.map((time:any, index:any) => {
           return (
-            <div key={index} onClick={handleStoreTime} className='w-[90px] h-[42px]  bg-white rounded-md border border-stone-300 justify-center items-center inline-flex '>
-              <p ref={timeRef}>{time}</p>
+              <li className='' key={index} value={time} onClick={handleStoreTime}>{time}</li>
     
-            </div>
           )
         }) : null
       }
-              {/* <p>{String (moment().weekday(moment().day())).slice(0,3)}</p> */}
 
-    </div>
+    </ul>
     }
     </div>
   )
